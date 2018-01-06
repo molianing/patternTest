@@ -188,11 +188,18 @@ public class InSet {
 			if(tmptab3[i].equalsIgnoreCase(in.getFrom())){
 				/*r表名 TF_PPM_OFFER_COMB*/in.setrTableName(tmptab3[i+1]);
 				/*r别名 co*/in.setrAlias(tmptab3[i+2]);
-				break;
+//				break;
+				continue ;
+			}else
+			if(tmptab3[i].equalsIgnoreCase(in.getWhere())){
+				String r_a_id = tmptab3[i+1];
+				String r_b_id= tmptab3[i+2];
+				in.setR_aIdName(getAfterP(r_a_id,null));
+				in.setR_bIdName(getBeforeP(getAfterP(r_b_id,null),";"));
 			}
 		}
 		/*r表中文名 */in.setrTableCnName(line3.substring(line3.indexOf(in.getDoubleMinus())+2));
-		
+		//
 
 		String line4 = inLine[3];
 //		   System.out.println(inLine[3]);
@@ -317,7 +324,35 @@ public class InSet {
 	       BufferedReader read=null;
 	       String s=null;
 	       try {
-	           read=new BufferedReader(new InputStreamReader(new FileInputStream(fileAllPath),"gbk"));
+	           read=new BufferedReader(new InputStreamReader(new FileInputStream(fileAllPath),"UTF-8"));
+	           int i = 0;
+	           while ((s = read.readLine()) != null) {
+	        	   if(inLine==null){
+	        		   inLine = new String[100000];
+	        	   }
+	        	   inLine[i++]=s;
+//	               System.out.println(s);
+	           }
+	       } catch (FileNotFoundException ex) {
+	           System.out.println("找不到指定文件！！");
+	       }catch (IOException e) {
+	           System.out.println("文件读取有误！");
+	       }finally{
+	           try {
+	               read.close();
+	           } catch (IOException ex) {
+	               System.out.println(ex.getMessage());
+	           }
+	       }
+	
+	}
+	public void getInSet(String fileAllPath,String charset){
+		
+
+	       BufferedReader read=null;
+	       String s=null;
+	       try {
+	           read=new BufferedReader(new InputStreamReader(new FileInputStream(fileAllPath),charset));
 	           int i = 0;
 	           while ((s = read.readLine()) != null) {
 	        	   if(inLine==null){
@@ -465,5 +500,30 @@ public class InSet {
 //		select * from TF_PPM_PREFERENTIAL_ITEM pren where pren ;--销售品定价项
 //		       select * from TF_PPM_PRODUCTBALANCE bala where bala ;--销售品结算配置表
 //		select * from TF_PPM_OFFER_COMB co where co.offer_comb_id  ;--销售品组合
+	}
+
+	public String getAfterP(String ins,String p){
+		if(p==null || p==""){
+			p=".";
+		}
+		String xx = "";
+		if(ins!=null && ins.indexOf(p)!=-1){
+			xx =ins.substring(ins.indexOf(p)+p.length());
+		}else if(ins!=null){
+			return ins;
+		}
+		return xx ;
+	}
+	public String getBeforeP(String ins,String p){
+		if(p==null || p==""){
+			p=".";
+		}
+		String xx = "";
+		if(ins!=null && ins.indexOf(p)!=-1){
+			xx =ins.substring(0,ins.indexOf(p));
+		}else if(ins!=null){
+			return ins;
+		}
+		return xx ;
 	}
 }

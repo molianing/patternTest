@@ -28,7 +28,7 @@ public class In {
 	/** tab空格 */
 	private String tabBlank;
 	/**数据库 表的 用户*/
-	private String tableUser="scwy" ;
+	private String tableUser="easycms_v2" ;
 	/** a表名 TF_PPM_OFFER_COMB */
 	private String aTableName;
 	/** a别名 co */
@@ -43,6 +43,9 @@ public class In {
 	private String rTableName;
 	/** r别名 co */
 	private String rAlias;
+	/**关联表中的的a表关联id*/
+	private String r_aIdName;//20170817
+	private String r_bIdName;
 	/** r表中文名 */
 	private String rTableCnName;
 	/** b表名 TF_PPM_OFFER_COMB */
@@ -248,6 +251,18 @@ public class In {
 	}
 	public void setRowid(String rowid) {
 		this.rowid = rowid;
+	}
+	public String getR_aIdName() {
+		return r_aIdName;
+	}
+	public void setR_aIdName(String r_aIdName) {
+		this.r_aIdName = r_aIdName;
+	}
+	public String getR_bIdName() {
+		return r_bIdName;
+	}
+	public void setR_bIdName(String r_bIdName) {
+		this.r_bIdName = r_bIdName;
 	}
 
 }
