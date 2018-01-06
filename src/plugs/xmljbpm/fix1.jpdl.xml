@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process name="全省实例类销售品管理流程fix" xmlns="http://jbpm.org/4.4/jpdl">
+  <on event="start">
+    <event-listener expr="#{startEvent}">
+      <field name="initValue"><string value="agreement,isReturn"/></field>
+    </event-listener>
+  </on>
+   <start g="101,7,48,48" name="start1">
+      <transition g="-74,3" name="to 发起工单" to="发起工单"/>
+   </start>
+   <end g="1346,547,48,48" name="end1"/>
+   <task g="166,612,100,52" name="CRM评估">
+   	 <assignment-handler expr="#{userAssign}"/>
+      <on event="end">
+  			<event-listener expr="#{transtionEvent}"/>
+		 </on>
+      <transition g="-15,18" name="to 2join1" to="join1"/>
+   </task>
+   <task g="77,89,92,52" name="发起工单">
+   	  <assignment-handler expr="#{userAssign}"/>
+   		<on event="start">
+ 			<event-listener expr="#{changeValueEvent}">
+ 				<field name="changeValue"><string value="isFilter=yes"/></field>
+  			</event-listener>
+ 		 </on>
+   		 <on event="end">
+  			<event-listener expr="#{changeValueEvent}">
+ 				<field name="changeValue"><string value="isFilter"/></field>
+  			</event-listener>
+		 </on>
+      <transition g="27,114:-28,57" name="to 计费CRM并行评估1" to="计费CRM并行评估"/>
+   </task>
+   <task g="177,519,92,52" name="计费评估">
+   	 <assignment-handler expr="#{userAssign}"/>
+       <on event="end">
+  			<event-listener expr="#{transtionEvent}"/>
+		 </on>
+      <transition g="-19,-15" name="to 1join1" to="join1"/>
+   </task>
+   <join g="304,549,48,48" name="join1">
+      <transition g="-21,15" name="to exc1" to="exclusive1"/>
+   </join>
+   <fork g="3,673,48,48" name="计费CRM并行评估">
+      <transition g="-36,-29" name="to 计费评估" to="计费评估"/>
+      <transition g="-13,-10" name="to CRM评估" to="CRM评估"/>
+   </fork>
+   <task g="327,444,125,52" name="服务初审">
+      <transition g="127,470:53,-16" name="re发起工单2" to="发起工单"/>
+      <transition name="to 客服中心审核" to="客服中心审核" g="-91,-9"/>
+   </task>
+   <decision g="368,546,48,48" name="exclusive1">
+   		<on event="end">
+  			<event-listener expr="#{backTranstionEvent}"/>
+		 </on>
+      <transition g="-52,9" name="to 计费配置3" to="计费配置">
+      	<condition expr="#{isReturn=='yes' and agreement=='yes'}"/>
+      </transition>
+      <transition g="-56,-10" name="to 客服服务细节审核" to="服务初审">
+      	<condition expr="#{agreement=='yes'}"/>
+      </transition>
+      <transition g="127,470:70,18" name="to 发起工单1" to="发起工单">
+      	<condition expr="#{agreement=='no'}"/>
+      </transition>
+   </decision>
+   <task g="466,443,117,52" name="服务细节审核">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="-52,-22" name="to fork2" to="市场部审核"/>
+      <transition g="525,341;126,341:-69,-22" name="re发起工单3" to="发起工单"/>
+   </task>
+   <task g="619,331,92,52" name="规则审核">
+     <assignment-handler expr="#{userAssign}"/>
+      <on event="end">
+  			<event-listener expr="#{transtionEvent}"/>
+		 </on>
+      <transition g="-34,-7" name="to 3join2" to="join2"/>
+   </task>
+   <task g="618,271,92,52" name="存量审核">
+     <assignment-handler expr="#{userAssign}"/>
+      <on event="end">
+  			<event-listener expr="#{transtionEvent}"/>
+		 </on>
+      <transition g="-31,-15" name="to 2join2" to="join2"/>
+   </task>
+   <task g="613,216,99,52" name="报备审核">
+     <assignment-handler expr="#{userAssign}"/>
+       <on event="end">
+  			<event-listener expr="#{transtionEvent}"/>
+		 </on>
+      <transition g="-43,-22" name="to 1join2" to="join2"/>
+   </task>
+   <task g="745,116,92,52" name="资费审核">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="933,142:-68,-23" name="to 市场部部门领导审核" to="领导审核"/>
+      <transition g="907,176;912,433;687,433;688,570:72,-123" name="to 计费配置1" to="计费配置"/>
+   </task>
+   <task g="873,70,122,52" name="领导审核">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="789,95:-93,-22" name="re 资费体系审核" to="资费审核"/>
+      <transition g="1020,93;1026,432;686,432;688,570:115,-89" name="to 计费配置2" to="计费配置"/>
+   </task>
+   <task g="742,545,92,52" name="计费配置">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="-20,22" name="to 计费审核" to="计费审核"/>
+      <transition g="788,697:-52,-22" name="to 2fork1" to="计费CRM并行评估">
+		<event-listener expr="#{changeValueEvent}">
+  			<field name="changeValue"><string value="isReturn=yes"/></field>
+  		</event-listener>
+      </transition>
+   </task>
+   <task g="854,544,92,52" name="计费审核">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="-73,44" name="to CRM" to="CRM配置"/>
+      <transition g="897,511;786,511:22,11" name="re 计费配置1" to="计费配置"/>
+   </task>
+   <task g="964,544,104,52" name="CRM配置">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="-21,-38" name="to 企信审核" to="CRM审核"/>
+   </task>
+   <task g="1081,542,92,52" name="CRM审核">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="1121,55:-38,275" name="to 政企公客业务测试" to="业务测试"/>
+      <transition g="1127,619;1016,619:-13,3" name="re CRM" to="CRM配置"/>
+   </task>
+   <task g="1141,26,118,52" name="业务测试">
+   	<assignment-handler expr="#{userAssign}"/>
+   		<on event="start">
+ 			<event-listener expr="#{changeValueEvent}">
+ 				<field name="changeValue"><string value="isFilter=yes"/></field>
+  			</event-listener>
+ 		 </on>
+   		 <on event="end">
+  			<event-listener expr="#{changeValueEvent}">
+ 				<field name="changeValue"><string value="isFilter"/></field>
+  			</event-listener>
+		 </on>
+      <transition g="18,-22" name="to 客服服务测试" to="服务测试"/>
+      <transition g="1199,10;1073,10;1073,510;786,510:-42,-3" name="re 计费配置2" to="计费配置"/>
+   </task>
+   <task g="1149,419,109,52" name="服务测试">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="1203,570:-18,-64" name="to 发布销售品" to="发布销售品"/>
+      <transition g="1074,444;1074,510;786,511:-46,-45" name="re 计费配置3" to="计费配置"/>
+   </task>
+   <task g="1227,543,92,52" name="发布销售品">
+   	<assignment-handler expr="#{userAssign}"/>
+      <transition g="-21,-31" name="to end1" to="end1"/>
+   </task>
+   <fork g="501,267,48,48" name="市场部审核">
+      <transition g="-53,-17" name="to 增存协同审核" to="存量审核"/>
+      <transition g="-58,-23" name="to 监管政策审核" to="报备审核"/>
+      <transition g="-55,-2" name="to 业务规则审核" to="规则审核"/>
+   </fork>
+   <join g="767,274,48,48" name="join2">
+      <transition g="15,-12" name="to exc2" to="exclusive2"/>
+   </join>
+   <decision g="767,191,48,48" name="exclusive2">
+   		<on event="end">
+  			<event-listener expr="#{backTranstionEvent}"/>
+		 </on>
+      <transition g="-94,-15" name="to 资费体系审核" to="资费审核">
+      	<condition expr="#{agreement=='yes'}"/>
+      </transition>
+      <transition g="124,215:124,-16" name="re 发起工单4" to="发起工单">
+      </transition>
+   </decision>
+   <task name="客服中心审核" g="248,366,92,52">
+      <transition name="to 营业厅测试" to="营业厅测试" g="-39,-33"/>
+      <transition name="re 发起工单5" to="发起工单" g="126,391:35,-28"/>
+   </task>
+   <task name="营业厅测试" g="373,365,92,52">
+      <transition name="to 服务细节审核" to="服务细节审核" g="-75,-17"/>
+   </task>
+</process>

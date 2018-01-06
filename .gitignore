@@ -1,0 +1,16 @@
+.settings/
+.settings/*
+bin/*
+.classpath
+.project
+*/.project
+/logs
+*.log
+*.log.*
+
+# project release file
+/*.war
+
+# plugin release file
+/*.zip
+/*.zip.sha1
